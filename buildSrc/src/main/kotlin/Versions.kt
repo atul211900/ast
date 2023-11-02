@@ -7,14 +7,12 @@ object Versions {
 
     // https://github.com/drieks/antlr-kotlin/commit/b09d76328f7d8c38417174d5621bbdfb52b6405e
     // https://jitpack.io/#drieks/antlr-kotlin
-    const val antlrKotlin = "ce9944fa0c"
+    const val antlrKotlin = "b5135079b8"
 
-    /*
     // official antlr kotlin version
     val antlrKotlinGroup = "com.strumenta.antlr-kotlin"
-    */
     // antlr kotlin version patched by kotlinx.ast author
-    const val antlrKotlinGroup = "com.github.drieks.antlr-kotlin"
+    //const val antlrKotlinGroup = "com.github.drieks.antlr-kotlin"
 
     const val kotest = "5.5.4"
 }
