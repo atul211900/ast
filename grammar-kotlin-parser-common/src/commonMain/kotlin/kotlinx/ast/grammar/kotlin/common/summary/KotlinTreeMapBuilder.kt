@@ -455,6 +455,7 @@ val kotlinTreeMapBuilder = TreeMapBuilder<KotlinTreeMapState>()
                     identifier = identifiers[0],
                     type = identifiers.drop(1),
                     receiverType = receiverType,
+                    statements = result.filterIsInstance<KlassBlock>().flatMap(KlassBlock::statements),
                     annotations = result.filterIsInstance<KlassAnnotation>(),
                     modifiers = result.filterIsInstance<KlassModifier>(),
                     parameter = result.filterIsInstance<KlassDeclaration>(),
@@ -470,8 +471,16 @@ val kotlinTreeMapBuilder = TreeMapBuilder<KotlinTreeMapState>()
 //     ;
     .convert(
         filter = byDescription("functionBody")
-    ) { _: Ast ->
-        astDrop()
+    ) { node: AstNode ->
+        recursiveFlatten(
+            node = node,
+            filter = byDescription("block", "expression"),
+            commentTreeFilter = commentTreeFilter
+        ).map { bodyNodes: List<Ast> ->
+            listOf(
+                KlassBlock(bodyNodes.filterIsInstance<Klass>())
+            )
+        }
     }
 
 // variableDeclaration
@@ -794,6 +803,23 @@ val kotlinTreeMapBuilder = TreeMapBuilder<KotlinTreeMapState>()
         filter = byDescription("receiverType")
     ) { node: AstNode ->
         recursiveChildren(node)
+    }
+
+    .convert(
+        filter = byDescription("statement")
+    ) { node: AstNode ->
+        recursiveFlatten(node)
+    }
+
+    .convert(
+        filter = byDescription("statements")
+    ) { node: AstNode ->
+        recursiveFlattenSingle(node, filter = byDescription("statement"))
+    }
+    .convert(
+        filter = byDescription("block")
+    ) { node: AstNode ->
+        recursiveFlattenSingle(node, filter = byDescription("statements"))
     }
 
 // parenthesizedUserType
